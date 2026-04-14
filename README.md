@@ -48,47 +48,13 @@ npm --prefix frontend run dev
 
 Then connect MetaMask on Sepolia (`Chain ID 11155111`).
 
-## Optional Mode: Local Hardhat
-
-Use this only for fast local testing.
-
-### 1. Start Local Node
-
-```bash
-npx hardhat node --port 8546
-```
-
-### 2. Deploy to Localhost
-
-```bash
-npx hardhat run scripts/deploy.js --network localhost
-```
-
-### 3. Frontend Local Env
-
-Set `frontend/.env` to:
-
-```env
-VITE_CHAIN_ID=31337
-VITE_CHAIN_NAME=Hardhat Localhost
-VITE_RPC_URL=http://127.0.0.1:8546
-```
-
-### 4. Run Frontend
-
-```bash
-npm --prefix frontend run dev
-```
-
 ## Redeploy Note
 
 Any redeploy updates the contract address. Always run the deploy script before using the UI, otherwise the frontend may call an old address.
 
-## Important Persistence Note
+## Persistence Note
 
-The local Hardhat chain is ephemeral. Restarting `hardhat node` resets all state and issued certificates.
-
-Sepolia is persistent and should be used for real cross-session verification.
+Sepolia is persistent, so issued certificates remain available across sessions.
 
 ## Security Notes
 
