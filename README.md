@@ -1,65 +1,97 @@
 # Blockchain_CertificateVerificationSystem
 
-## Local Development
+VeriChain Academics is a certificate issuance and verification dApp backed by the `AcademicRegistry` smart contract.
 
-1. Install dependencies in both workspaces.
+## Recommended Mode: Sepolia (Persistent)
+
+Use Sepolia if you want certificates to remain available across sessions.
+
+### 1. Install Dependencies
 
 ```bash
 npm install
 npm --prefix frontend install
 ```
 
-2. Start Hardhat local node on the port used by this project.
+### 2. Configure Backend Environment
 
-```bash
-npx hardhat node --port 8546
+Create `.env` in the project root (copy from `.env.example`):
+
+```env
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+SEPOLIA_PRIVATE_KEY=0xYOUR_PRIVATE_KEY
 ```
 
-3. In a new terminal, deploy the contract and sync frontend contract metadata.
+### 3. Configure Frontend Environment
 
-```bash
-npx hardhat run scripts/deploy.js --network localhost
+Create `frontend/.env` (copy from `frontend/.env.example`):
+
+```env
+VITE_CHAIN_ID=11155111
+VITE_CHAIN_NAME=Sepolia
+VITE_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
 ```
 
-This updates `frontend/src/utils/contractData.json` with the current deployed address and ABI.
-
-4. Start the frontend.
-
-```bash
-npm --prefix frontend run dev
-```
-
-## Important Redeploy Note
-
-Whenever you redeploy `AcademicRegistry.sol`, run the deploy script again before using the UI:
-
-```bash
-npx hardhat run scripts/deploy.js --network localhost
-```
-
-If you skip this, the frontend may call an old contract address and fail with selector/revert errors.
-
-## Persistent Network Deployment
-
-For real persistence across sessions, use Sepolia instead of the local Hardhat node.
-
-1. Copy `.env.example` to `.env` and fill in your Sepolia RPC URL and private key.
-2. Deploy to Sepolia:
+### 4. Deploy Contract to Sepolia
 
 ```bash
 npx hardhat run scripts/deploy.js --network sepolia
 ```
 
-3. Connect MetaMask to Sepolia and use the deployed contract address written to `frontend/src/utils/contractData.json`.
+This rewrites `frontend/src/utils/contractData.json` with the deployed contract address and ABI.
 
-Unlike the local Hardhat node, Sepolia keeps the contract state after you close the frontend or restart your machine.
+### 5. Run Frontend
 
-## Local Chain Persistence
+```bash
+npm --prefix frontend run dev
+```
 
-The `hardhat node` network is ephemeral. If you stop or restart the node, all issued certificates and contract state are cleared.
+Then connect MetaMask on Sepolia (`Chain ID 11155111`).
 
-If a certificate verifies successfully in one session but fails later, make sure:
+## Optional Mode: Local Hardhat
 
-1. The same Hardhat node instance is still running on `8546`.
-2. You have not redeployed the contract without reissuing the certificate.
-3. MetaMask is connected to `Chain ID 31337`.
+Use this only for fast local testing.
+
+### 1. Start Local Node
+
+```bash
+npx hardhat node --port 8546
+```
+
+### 2. Deploy to Localhost
+
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+### 3. Frontend Local Env
+
+Set `frontend/.env` to:
+
+```env
+VITE_CHAIN_ID=31337
+VITE_CHAIN_NAME=Hardhat Localhost
+VITE_RPC_URL=http://127.0.0.1:8546
+```
+
+### 4. Run Frontend
+
+```bash
+npm --prefix frontend run dev
+```
+
+## Redeploy Note
+
+Any redeploy updates the contract address. Always run the deploy script before using the UI, otherwise the frontend may call an old address.
+
+## Important Persistence Note
+
+The local Hardhat chain is ephemeral. Restarting `hardhat node` resets all state and issued certificates.
+
+Sepolia is persistent and should be used for real cross-session verification.
+
+## Security Notes
+
+1. Never commit `.env` files.
+2. Use a burner wallet for `SEPOLIA_PRIVATE_KEY`.
+3. Keep only small test funds in that wallet.
